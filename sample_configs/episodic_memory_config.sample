@@ -17,6 +17,11 @@ Model:
     model_vendor: openai
     model_name: "gpt-4o-mini"
     api_key: <YOUR_API_KEY>
+  qianwen: 
+    model_vendor: qianwen
+    model_name: "qwen-turbo"
+    api_key: <YOUR_API_KEY>
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     
 storage:
   my_storage_id:
@@ -36,6 +41,11 @@ embedder:
   my_embedder_id:
     model_name: "text-embedding-3-small"
     api_key: <YOUR_API_KEY>
+  qianwen_embedder_id:
+    model_vendor: qianwen
+    model_name: "text-embedding-v2"
+    api_key: <YOUR_API_KEY>
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 reranker:
   my_reranker_id:

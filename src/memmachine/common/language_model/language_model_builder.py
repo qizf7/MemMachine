@@ -20,7 +20,7 @@ class LanguageModelBuilder(Builder):
         dependency_ids = set()
 
         match name:
-            case "openai":
+            case "openai" | "qianwen":
                 if "metrics_factory_id" in config:
                     dependency_ids.add(config["metrics_factory_id"])
 
@@ -64,6 +64,46 @@ class LanguageModelBuilder(Builder):
                     {
                         "model": config.get("model", "gpt-5-nano"),
                         "api_key": config["api_key"],
+                        "metrics_factory": injected_metrics_factory,
+                        "user_metrics_labels": config.get(
+                            "user_metrics_labels", {}
+                        ),
+                    }
+                )
+            case "qianwen":
+                from .qianwen_language_model import QianwenLanguageModel
+
+                injected_metrics_factory_id = config.get("metrics_factory_id")
+                if injected_metrics_factory_id is None:
+                    injected_metrics_factory = None
+                elif not isinstance(injected_metrics_factory_id, str):
+                    raise TypeError(
+                        "metrics_factory_id must be a string if provided"
+                    )
+                else:
+                    injected_metrics_factory = injections.get(
+                        injected_metrics_factory_id
+                    )
+                    if injected_metrics_factory is None:
+                        raise ValueError(
+                            "MetricsFactory with id "
+                            f"{injected_metrics_factory_id} "
+                            "not found in injections"
+                        )
+                    elif not isinstance(
+                        injected_metrics_factory, MetricsFactory
+                    ):
+                        raise TypeError(
+                            "Injected dependency with id "
+                            f"{injected_metrics_factory_id} "
+                            "is not a MetricsFactory"
+                        )
+
+                return QianwenLanguageModel(
+                    {
+                        "model": config.get("model", "qwen-turbo"),
+                        "api_key": config["api_key"],
+                        "base_url": config.get("base_url", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
                         "metrics_factory": injected_metrics_factory,
                         "user_metrics_labels": config.get(
                             "user_metrics_labels", {}

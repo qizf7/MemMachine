@@ -27,8 +27,12 @@ from prometheus_client import make_asgi_app
 from pydantic import BaseModel
 
 from memmachine.common.embedder.openai_embedder import OpenAIEmbedder
+from memmachine.common.embedder.qianwen_embedder import QianwenEmbedder
 from memmachine.common.language_model.openai_language_model import (
     OpenAILanguageModel,
+)
+from memmachine.common.language_model.qianwen_language_model import (
+    QianwenLanguageModel,
 )
 from memmachine.episodic_memory.data_types import ContentType
 from memmachine.episodic_memory.episodic_memory import (
@@ -162,21 +166,57 @@ async def http_app_lifespan(application: FastAPI):
     except Exception as e:
         raise e
 
-    # if the model is defined in the config, use it.
-    profile_config = yaml_config.get("profile_memory", {})
     model_config = yaml_config.get("model", {})
-    model_name = profile_config.get("model_name")
-    api_key = os.getenv("OPENAI_API_KEY")
+    profile_config = yaml_config.get("profile_memory", {})
+    profile_model_name = profile_config.get("model_name")
+    # Prioritize environment variables over config file
+    api_key = None
     model = "gpt-4.1-mini"
-    if model_name is not None:
-        model_def = model_config.get(model_name)
+    model_vendor = "openai"
+    base_url = None
+    
+    if profile_model_name is not None:
+        model_def = model_config.get(profile_model_name)
         if model_def is not None:
-            api_key = model_def.get("api_key", api_key)
+            api_key = model_def.get("api_key")
             model = model_def.get("model_name", model)
+            model_vendor = model_def.get("model_vendor", "openai")
+            base_url = model_def.get("base_url")
 
-    # TODO switch to using builder initialization
-    llm_model = OpenAILanguageModel({"api_key": api_key, "model": model})
-    embeddings = OpenAIEmbedder({"api_key": api_key})
+    # Initialize language model based on vendor
+    if model_vendor == "qianwen":
+        llm_model = QianwenLanguageModel({
+            "api_key": os.getenv("QIANWEN_API_KEY") or api_key, 
+            "model": model,
+            "base_url": base_url
+        })
+    else:
+        llm_model = OpenAILanguageModel({"api_key":  os.getenv("OPENAI_API_KEY") or api_key, "model": model})
+
+    # Initialize embedder based on configuration
+    embedder_config = yaml_config.get("embedder", {})
+    embedder_id = yaml_config.get("long_term_memory", {}).get("embedder")
+    if embedder_id and embedder_id in embedder_config:
+        embedder_def = embedder_config[embedder_id]
+        embedder_vendor = embedder_def.get("model_vendor", "openai")
+        embedder_api_key = embedder_def.get("api_key")
+        embedder_model = embedder_def.get("model_name", "text-embedding-3-small")
+        embedder_base_url = embedder_def.get("base_url")
+        
+        if embedder_vendor == "qianwen":
+            embeddings = QianwenEmbedder({
+                "api_key": os.getenv("QIANWEN_API_KEY") or embedder_api_key,
+                "model": embedder_model,
+                "base_url": embedder_base_url
+            })
+        else:
+            embeddings = OpenAIEmbedder({
+                "api_key":  os.getenv("OPENAI_API_KEY") or embedder_api_key,
+                "model": embedder_model
+            })
+    else:
+        # Fallback to OpenAI embedder
+        embeddings = OpenAIEmbedder({"api_key": api_key})
 
     global profile_memory
     prompt_file = yaml_config.get("prompt", {}).get(
