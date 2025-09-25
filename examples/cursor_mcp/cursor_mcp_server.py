@@ -1254,6 +1254,23 @@ def create_custom_app() -> FastAPI:
         except Exception as e:
             return create_error_response("error", f"Internal error: {str(e)}")
 
+    @app.get("/mcp/tools")
+    async def list_mcp_tools() -> Dict[str, Any]:
+        """List all registered MCP tools.
+
+        This implementation inspects module globals for functions with the
+        "mcp_" prefix, which mirrors the set of MCP-exposed tools in this
+        server. It avoids relying on FastMCP private internals.
+        """
+        try:
+            tools_info: list[dict[str, Any]] = []
+            for name, obj in globals().items():
+                if callable(obj) and isinstance(name, str) and name.startswith("mcp_"):
+                    tools_info.append({"name": name})
+            return create_success_response("MCP tools listed successfully", tools=tools_info, total=len(tools_info))
+        except Exception as e:
+            return create_error_response("error", f"Failed to list MCP tools: {str(e)}")
+
     
     # Mount the MCP app
     logger.info("Mounting MCP app at /mcp")
@@ -1288,11 +1305,4 @@ if __name__ == "__main__":
         log_level="info"
     )
 
-def print_info():
-    logger.info("=" * 60)
-    logger.info("Printing Cursor MCP Server info")
-    logger.info("=" * 60)
-    logger.info(f"Port: {CURSOR_MCP_PORT}")
-    logger.info(f"MemMachine Backend URL: {MEMORY_BACKEND_URL}")
-    logger.info(f"Request Timeout: {REQUEST_TIMEOUT}s")
-    logger.info("=" * 60)
+
