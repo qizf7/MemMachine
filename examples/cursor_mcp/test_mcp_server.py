@@ -44,11 +44,29 @@ def get_mcp_session_id():
         "jsonrpc": "2.0",
         "id": 0,
         "method": "initialize",
+        "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {
+                "tools": True,
+                "prompts": True,
+                "resources": True,
+                "logging": False,
+                "elicitation": {},
+                "roots": {
+                    "listChanged": False
+                }
+            },
+            "clientInfo": {
+                "name": "cursor-mcp-test",
+                "version": "1.0.0"
+            }
+        }
     }
     
     # Headers matching Cursor's request format
     headers = {
         "user-id": TEST_USER_ID,
+        "api_key": "value",  # Add API key for authentication
         "Content-Type": "application/json",
         "Accept": "application/json, text/event-stream",
         "User-Agent": "cursor-mcp-test/1.0.0",
@@ -74,6 +92,27 @@ def get_mcp_session_id():
             print(f"✓ Successfully extracted session_id from headers: {session_id}")
         else:
             print(f"✗ Session ID not found in response headers. Available headers: {list(response.headers.keys())}")
+        
+        # Send notifications/initialized after successful initialize
+        if session_id:
+            print("Sending notifications/initialized...")
+            initialized_data = {
+                "jsonrpc": "2.0",
+                "method": "notifications/initialized"
+            }
+            initialized_headers = headers.copy()
+            initialized_headers["mcp-session-id"] = session_id
+            
+            try:
+                init_response = requests.post(
+                    f"{MCP_SERVER_URL}/mcp/",
+                    json=initialized_data,
+                    headers=initialized_headers,
+                    timeout=30
+                )
+                print(f"✓ Notifications/initialized sent (status: {init_response.status_code})")
+            except requests.exceptions.RequestException as e:
+                print(f"⚠ Warning: Failed to send notifications/initialized: {e}")
         
     except requests.exceptions.RequestException as e:
         session_id = None
@@ -110,6 +149,7 @@ def test_add_memory(session_id: str):
     headers = {
         "user-id": TEST_USER_ID,
         "mcp-session-id": session_id,
+        "api_key": "value",  # Add API key for authentication
         "Content-Type": "application/json",
         "Accept": "application/json, text/event-stream"  # Important for MCP
     }
@@ -177,6 +217,7 @@ def test_search_memory(session_id: str = None):
     # Add headers for user_id and session_id (middleware will extract these)
     headers = {
         "user-id": TEST_USER_ID,
+        "api_key": "value",  # Add API key for authentication
         "Content-Type": "application/json",
         "Accept": "application/json, text/event-stream"  # Important for MCP
     }
@@ -241,6 +282,8 @@ def main():
     
     # Step 2: Use the session ID for other tests
     print("\n" + "=" * 30)
+    print("Waiting for initialization to complete...")
+    time.sleep(2)  # Give time for initialization to complete
     print("STEP 2: Running tests with session ID")
     print("=" * 30)
     
