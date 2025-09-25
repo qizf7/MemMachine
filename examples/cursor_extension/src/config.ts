@@ -10,3 +10,11 @@ export const API_ENDPOINTS = {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout'
 } as const;
+
+// MCP Server Configuration
+export const MCP_CONFIG = {
+    MCP_NAME: 'MemMachine',
+    MCP_URL: 'http://18.116.238.202:8001/mcp/',
+    MCP_AUTH_TOKEN: 'your-auth-token-here',
+} as const;
+

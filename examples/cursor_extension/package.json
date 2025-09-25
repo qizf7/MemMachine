@@ -5,7 +5,8 @@
   "version": "0.0.1",
   "publisher": "memverge",
   "engines": {
-    "vscode": "^1.93.0"
+    "vscode": "^1.93.0",
+    "cursor": "^0.40.0"
   },
   "categories": [
     "Other"
@@ -32,6 +33,18 @@
       {
         "command": "memmachine.refreshProfileMemory",
         "title": "MemMachine: Refresh Profile Memory"
+      },
+      {
+        "command": "memmachine.registerMCPServer",
+        "title": "MemMachine: Register MCP Server"
+      },
+      {
+        "command": "memmachine.unregisterMCPServer",
+        "title": "MemMachine: Unregister MCP Server"
+      },
+      {
+        "command": "memmachine.autoRegisterDefaultServer",
+        "title": "MemMachine: Auto-register Default Server"
       }
     ],
     "viewsContainers": {
