@@ -2,8 +2,9 @@
   "name": "memmachine",
   "displayName": "MemMachine",
   "description": "This is the extension for MemMachine, which lets you leverage its capabilities within the Cursor editor.",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "publisher": "memverge",
+  "icon": "logo.png",
   "engines": {
     "vscode": "^1.93.0",
     "cursor": "^0.40.0"
