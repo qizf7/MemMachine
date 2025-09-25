@@ -134,3 +134,5 @@ To extend the server:
 ## License
 
 This MCP server follows the same license as the MemMachine project.
+
+
