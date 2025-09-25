@@ -61,10 +61,6 @@
       {
         "command": "memmachine.unregisterMCPServer",
         "title": "MemMachine: Unregister MCP Server"
-      },
-      {
-        "command": "memmachine.autoRegisterDefaultServer",
-        "title": "MemMachine: Auto-register Default Server"
       }
     ],
     "viewsContainers": {

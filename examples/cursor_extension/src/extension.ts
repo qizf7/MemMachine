@@ -34,14 +34,6 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('memmachine.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from MemMachine! (test)');
-	});
 
 	// Register command to show episodic memory panel
 	let showEpisodicMemoryDisposable = vscode.commands.registerCommand('memmachine.showEpisodicMemory', () => {
@@ -73,18 +65,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register MCP server commands
 	let registerMCPServerDisposable = vscode.commands.registerCommand('memmachine.registerMCPServer', async () => {
-		const serverName = await vscode.window.showInputBox({
-			prompt: 'Enter MCP server name',
-		placeHolder: MCP_NAME,
-		value: MCP_NAME
-		});
-
-		if (!serverName) {
-			return;
-		}
-
 		const success = await mcpManager.registerServer({
-			name: serverName,
+			name: MCP_NAME,
 			url: MCP_URL,
 			headers: {
 				'Authorization': `Bearer ${AUTH_TOKEN}`
@@ -92,44 +74,19 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 
 		if (success) {
-			vscode.window.showInformationMessage(`MCP server '${serverName}' registered successfully!`);
+			vscode.window.showInformationMessage(`MCP server '${MCP_NAME}' registered successfully!`);
 		}
 	});
 
 	let unregisterMCPServerDisposable = vscode.commands.registerCommand('memmachine.unregisterMCPServer', async () => {
-		const registeredServers = mcpManager.getRegisteredServers();
-		
-		if (registeredServers.length === 0) {
-			vscode.window.showInformationMessage('No MCP servers are currently registered.');
-			return;
-		}
-
-		const serverNames = registeredServers.map(server => server.name);
-		const selectedServer = await vscode.window.showQuickPick(serverNames, {
-			placeHolder: 'Select MCP server to unregister'
-		});
-
-		if (!selectedServer) {
-			return;
-		}
-
-		const success = await mcpManager.unregisterServer(selectedServer);
+		const success = await mcpManager.unregisterServer(MCP_NAME);
 		if (success) {
-			vscode.window.showInformationMessage(`MCP server '${selectedServer}' unregistered successfully!`);
-		}
-	});
-
-	// Auto-register default MemMachine server on activation
-	let autoRegisterDisposable = vscode.commands.registerCommand('memmachine.autoRegisterDefaultServer', async () => {
-		const success = await mcpManager.registerMemMachineServer();
-		if (success) {
-			console.log('Default MemMachine MCP server registered automatically');
+			vscode.window.showInformationMessage(`MCP server '${MCP_NAME}' unregistered successfully!`);
 		}
 	});
 
 
 	context.subscriptions.push(
-		disposable, 
 		showEpisodicMemoryDisposable, 
 		refreshAllMemoriesDisposable,
 		refreshEpisodicMemoryDisposable, 
@@ -137,7 +94,6 @@ export function activate(context: vscode.ExtensionContext) {
 		refreshProfileMemoryDisposable,
 		registerMCPServerDisposable,
 		unregisterMCPServerDisposable,
-		autoRegisterDisposable
 	);
 
 	// Auto-register the default MemMachine server on extension activation
