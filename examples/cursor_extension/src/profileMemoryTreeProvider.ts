@@ -23,11 +23,9 @@ export class ProfileMemoryTreeProvider implements vscode.TreeDataProvider<Profil
     getChildren(element?: ProfileMemoryItem): Thenable<ProfileMemoryItem[]> {
         if (!element) {
             const items = [...this._memories];
-            // Add refresh button at the top
+            // Show loading indicator if refreshing
             if (this._isLoading) {
                 items.unshift(new ProfileMemoryItem('Loading...', 'Refreshing profile memories...', vscode.TreeItemCollapsibleState.None, 'loading'));
-            } else {
-                items.unshift(new ProfileMemoryItem('Refresh', 'Click to refresh profile memories', vscode.TreeItemCollapsibleState.None, 'refresh'));
             }
             return Promise.resolve(items);
         }
@@ -46,8 +44,8 @@ export class ProfileMemoryTreeProvider implements vscode.TreeDataProvider<Profil
             }
         }
         
-        // If element is a memory item (not refresh/loading), return its details
-        if (element.memoryId && element.memoryId !== 'refresh' && element.memoryId !== 'loading' && !String(element.memoryId).startsWith('tag-')) {
+        // If element is a memory item (not loading), return its details
+        if (element.memoryId && element.memoryId !== 'loading' && !String(element.memoryId).startsWith('tag-')) {
             return Promise.resolve(this.createMemoryDetailItems(element));
         }
         
@@ -209,14 +207,7 @@ export class ProfileMemoryItem extends vscode.TreeItem {
         this.contextValue = contextValue;
         
         // Add command based on item type
-        if (this.memoryId === 'refresh') {
-            this.iconPath = new vscode.ThemeIcon('refresh');
-            this.command = {
-                command: 'memmachine.refreshProfileMemory',
-                title: 'Refresh Profile Memory',
-                arguments: []
-            };
-        } else if (this.memoryId === 'loading') {
+        if (this.memoryId === 'loading') {
             this.iconPath = new vscode.ThemeIcon('loading');
         } else if (this.isDetail) {
             // Detail items show info icon, no command needed

@@ -52,11 +52,13 @@
       },
       {
         "command": "memmachine.refreshEpisodicMemory",
-        "title": "MemMachine: Refresh Episodic Memory"
+        "title": "Refresh",
+        "icon": "$(refresh)"
       },
       {
         "command": "memmachine.refreshProfileMemory",
-        "title": "MemMachine: Refresh Profile Memory"
+        "title": "Refresh",
+        "icon": "$(refresh)"
       },
       {
         "command": "memmachine.registerMCPServer",
@@ -94,6 +96,20 @@
           "id": "profileMemoryPanel",
           "name": "Profile Memory",
           "when": "true"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "memmachine.refreshEpisodicMemory",
+          "when": "view == episodicMemoryPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "memmachine.refreshProfileMemory",
+          "when": "view == profileMemoryPanel",
+          "group": "navigation"
         }
       ]
     }

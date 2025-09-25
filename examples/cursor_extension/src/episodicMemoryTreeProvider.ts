@@ -23,17 +23,15 @@ export class EpisodicMemoryTreeProvider implements vscode.TreeDataProvider<Episo
     getChildren(element?: EpisodicMemoryItem): Thenable<EpisodicMemoryItem[]> {
         if (!element) {
             const items = [...this._memories];
-            // Add refresh button at the top
+            // Show loading indicator if refreshing
             if (this._isLoading) {
                 items.unshift(new EpisodicMemoryItem('Loading...', 'Refreshing episodic memories...', vscode.TreeItemCollapsibleState.None, 'loading'));
-            } else {
-                items.unshift(new EpisodicMemoryItem('Refresh', 'Click to refresh episodic memories', vscode.TreeItemCollapsibleState.None, 'refresh'));
             }
             return Promise.resolve(items);
         }
         
-        // If element is a memory item (not refresh/loading), return its details
-        if (element.memoryId && element.memoryId !== 'refresh' && element.memoryId !== 'loading') {
+        // If element is a memory item (not loading), return its details
+        if (element.memoryId && element.memoryId !== 'loading') {
             return Promise.resolve(this.createMemoryDetailItems(element));
         }
         
@@ -184,14 +182,7 @@ export class EpisodicMemoryItem extends vscode.TreeItem {
         this.contextValue = 'episodicMemory';
         
         // Add command based on item type
-        if (this.memoryId === 'refresh') {
-            this.iconPath = new vscode.ThemeIcon('refresh');
-            this.command = {
-                command: 'memmachine.refreshEpisodicMemory',
-                title: 'Refresh Episodic Memory',
-                arguments: []
-            };
-        } else if (this.memoryId === 'loading') {
+        if (this.memoryId === 'loading') {
             this.iconPath = new vscode.ThemeIcon('loading');
         } else if (this.isDetail) {
             // Detail items show info icon, no command needed
