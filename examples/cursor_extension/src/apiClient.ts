@@ -1,6 +1,6 @@
 import * as https from 'https';
 import * as http from 'http';
-import { API_BASE_URL, API_ENDPOINTS } from './config';
+import { getApiBaseUrl, API_ENDPOINTS } from './config';
 
 export interface ApiResponse<T = any> {
     data: T;
@@ -17,8 +17,8 @@ export interface ApiError {
 export class ApiClient {
     private baseUrl: string;
 
-    constructor(baseUrl: string = API_BASE_URL) {
-        this.baseUrl = baseUrl;
+    constructor(baseUrl?: string) {
+        this.baseUrl = baseUrl || getApiBaseUrl();
     }
 
     /**

@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import { EpisodicMemoryTreeProvider } from './episodicMemoryTreeProvider';
 import { ProfileMemoryTreeProvider } from './profileMemoryTreeProvider';
 import { MCPServerManager } from './mcpServerManager';
-import { MCP_CONFIG } from './config';
+import { MCP_NAME, MCP_URL, AUTH_TOKEN } from './config';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -75,8 +75,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let registerMCPServerDisposable = vscode.commands.registerCommand('memmachine.registerMCPServer', async () => {
 		const serverName = await vscode.window.showInputBox({
 			prompt: 'Enter MCP server name',
-			placeHolder: MCP_CONFIG.MCP_NAME,
-			value: MCP_CONFIG.MCP_NAME
+		placeHolder: MCP_NAME,
+		value: MCP_NAME
 		});
 
 		if (!serverName) {
@@ -85,9 +85,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const success = await mcpManager.registerServer({
 			name: serverName,
-			url: MCP_CONFIG.MCP_URL,
+			url: MCP_URL,
 			headers: {
-				'Authorization': `Bearer ${MCP_CONFIG.MCP_AUTH_TOKEN}`
+				'Authorization': `Bearer ${AUTH_TOKEN}`
 			}
 		});
 

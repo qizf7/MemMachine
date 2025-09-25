@@ -13,6 +13,26 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "MemMachine",
+      "properties": {
+        "memmachine.apiBaseUrl": {
+          "type": "string",
+          "default": "http://18.116.238.202:8001",
+          "description": "Base URL for the MemMachine API"
+        },
+        "memmachine.mcpUrl": {
+          "type": "string",
+          "default": "http://18.116.238.202:8001/mcp/",
+          "description": "URL for the MemMachine MCP server"
+        },
+        "authToken": {
+          "type": "string",
+          "default": "your-auth-token-here",
+          "description": "Authentication token for MemMachine API"
+        }
+      }
+    },
     "commands": [
       {
         "command": "memmachine.showEpisodicMemory",

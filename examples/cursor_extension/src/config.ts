@@ -1,5 +1,4 @@
-// API Configuration
-export const API_BASE_URL = 'http://18.116.238.202:8001';
+import * as vscode from 'vscode';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -11,10 +10,24 @@ export const API_ENDPOINTS = {
     LOGOUT: '/auth/logout'
 } as const;
 
-// MCP Server Configuration
-export const MCP_CONFIG = {
-    MCP_NAME: 'MemMachine',
-    MCP_URL: 'http://18.116.238.202:8001/mcp/',
-    MCP_AUTH_TOKEN: 'your-auth-token-here',
-} as const;
+export const MCP_NAME = 'MemMachine';
+
+export function getApiBaseUrl(): string {
+    return vscode.workspace.getConfiguration('memmachine').get('apiBaseUrl', 'http://18.116.238.202:8001');
+}
+
+export function getMcpUrl(): string {
+    return vscode.workspace.getConfiguration('memmachine').get('mcpUrl', 'http://18.116.238.202:8001/mcp/');
+}
+
+export function getAuthToken(): string {
+    return vscode.workspace.getConfiguration().get('authToken', 'your-auth-token-here');
+}
+
+export const MCP_URL = getMcpUrl();
+export const API_BASE_URL = getApiBaseUrl();
+
+export const AUTH_TOKEN = getAuthToken();
+
+
 
