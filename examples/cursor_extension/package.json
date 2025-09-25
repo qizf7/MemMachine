@@ -16,6 +16,11 @@
     "configuration": {
       "title": "MemMachine",
       "properties": {
+        "memmachine.authToken": {
+          "type": "string",
+          "default": "your-auth-token-here",
+          "description": "Authentication token for MemMachine API"
+        },
         "memmachine.apiBaseUrl": {
           "type": "string",
           "default": "http://18.116.238.202:8001",
@@ -25,11 +30,6 @@
           "type": "string",
           "default": "http://18.116.238.202:8001/mcp/",
           "description": "URL for the MemMachine MCP server"
-        },
-        "authToken": {
-          "type": "string",
-          "default": "your-auth-token-here",
-          "description": "Authentication token for MemMachine API"
         }
       }
     },
