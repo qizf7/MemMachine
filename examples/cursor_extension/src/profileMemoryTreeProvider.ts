@@ -220,7 +220,7 @@ export class ProfileMemoryItem extends vscode.TreeItem {
             this.iconPath = new vscode.ThemeIcon('loading');
         } else if (this.isDetail) {
             // Detail items show info icon, no command needed
-            this.iconPath = new vscode.ThemeIcon('info');
+            // this.iconPath = new vscode.ThemeIcon('info');
         } else if (contextValue === 'tag-group') {
             // Tag group items show tag icon
             this.iconPath = new vscode.ThemeIcon('tag');

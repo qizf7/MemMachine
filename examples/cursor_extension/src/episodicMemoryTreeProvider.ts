@@ -195,7 +195,7 @@ export class EpisodicMemoryItem extends vscode.TreeItem {
             this.iconPath = new vscode.ThemeIcon('loading');
         } else if (this.isDetail) {
             // Detail items show info icon, no command needed
-            this.iconPath = new vscode.ThemeIcon('info');
+            // this.iconPath = new vscode.ThemeIcon('info');
         } else {
             // Main memory items are collapsible, no command needed
             this.iconPath = new vscode.ThemeIcon('book');
