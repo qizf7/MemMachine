@@ -81,7 +81,7 @@ setup_buildx() {
     if ! docker buildx ls | grep -q "${BUILDER_NAME}.*running"; then
         msg "Builder '${BUILDER_NAME}' not found or not running. Creating it now..."
         docker buildx rm "${BUILDER_NAME}" &>/dev/null || true
-        docker buildx create --name "${BUILDER_NAME}" --use --driver-opt "image=moby/buildkit:v0.12.0" || error "Failed to create Buildx builder."
+        docker buildx create --name "${BUILDER_NAME}" --use --driver-opt "image=moby/buildkit:latest" || error "Failed to create Buildx builder."
     fi
     docker buildx inspect --bootstrap || error "Failed to bootstrap Buildx builder."
     success "Buildx builder is ready."
@@ -209,7 +209,8 @@ print_summary_and_confirm() {
 
 build_image() {
     local build_type="$1"
-    msg "Preparing to build ${build_type^^} image..."
+    local build_type_upper=$(echo "$build_type" | tr '[:lower:]' '[:upper:]')
+    msg "Preparing to build ${build_type_upper} image..."
     local build_args=""; if [[ "$build_type" == "gpu" ]]; then build_args="--build-arg GPU=true"; fi
 
     local docker_tags=(); docker_tags+=("--tag" "${IMAGE_NAME}:${VERSION}-${build_type}")
@@ -227,13 +228,13 @@ build_image() {
     fi
 
     # shellcheck disable=SC2086
-    docker buildx build --platform "${PLATFORMS}" ${build_args} "${docker_tags[@]}" "${final_args[@]}" . || error "Docker build for ${build_type^^} failed."
+    docker buildx build --platform "${PLATFORMS}" ${build_args} "${docker_tags[@]}" "${final_args[@]}" . || error "Docker build for ${build_type_upper} failed."
 
     if [[ "$ACTION" == "Local Build" ]]; then
-        success "${build_type^^} image built successfully!"
+        success "${build_type_upper} image built successfully!"
         msg "To test it, run: docker run -it --rm ${IMAGE_NAME}:${VERSION}-${build_type} bash"
     else
-        success "${build_type^^} image build and push completed successfully!"
+        success "${build_type_upper} image build and push completed successfully!"
     fi
 }
 
